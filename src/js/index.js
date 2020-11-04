@@ -47,12 +47,17 @@ const controlSearch = async () => {
         searchView.clearResults();
         renderLoader(elements.searchRes);
 
-        // 4. Search for recipes
-        await state.search.getResults();
-
-        // 5. render results on UI
-        clearLoader();
-        searchView.renderResults(state.search.result); // here state.search.result is array with all 30 results...!!
+        try {
+            // 4. Search for recipes
+            await state.search.getResults();
+    
+            // 5. render results on UI
+            clearLoader();
+            searchView.renderResults(state.search.result); // here state.search.result is array with all 30 results...!!
+        } catch (err) {
+            alert('Something went wrong with the search...');
+            clearLoader();
+        }
 
         // we actually want to render the results but when we actually gets the results so we use await function meanwhile we get our result now if we use await in this so we basically use async in beginnig of the function
 
@@ -84,20 +89,40 @@ elements.searchResPages.addEventListener('click', e => {
 // const r = new Recipe(46956);
 // r.getRecipe();
 // console.log(r);
-const controlRecipe = () => {
+const controlRecipe = async () => {
     // Get ID from url
-    const id = window.location.hash.replace('#', '');
+    const id = window.location.hash.replace('#', ''); // window.location is entire URL and hash is the id
     console.log(id);
 
     if (id) {
+        // Prepare UI for changes
+
+        //Create new recipe object
+        state.recipe = new Recipe(id);
+
+        try {
+            // Get recipe data
+            await state.recipe.getRecipe();
+    
+            // Calculate servings and time
+            state.recipe.calcTime();
+            state.recipe.calcServings();
+    
+            //Render recipe
+            console.log(state.recipe);
+        } catch (err) {
+            alert('Error processing recipe!');
+        }
+        
 
     }
 };
 
-window.addEventListener('hashchange', controlRecipe);
+// window.addEventListener('hashchange', controlRecipe);
+// window.addEventListener('load', controlRecipe);
+// it basically fires when the load event is happened
 
-
-
+['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
 
 
 
