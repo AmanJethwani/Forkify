@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { join } from 'core-js/fn/array';
 
 export default class Recipe {
     constructor(id) {
@@ -33,9 +34,43 @@ export default class Recipe {
     }
 
     parseIngredients() {
-        const newIngredients = this.ingredients.map(el => {
+        const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
+        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'tsp', 'cup', 'pound'];
 
-        })
+        const newIngredients = this.ingredients.map(el => { // why we use here map method.
+            // 1 Uniform units
+            let ingredient = el.toLowerCase();// it will change the string in lower case.
+            unitsLong.forEach((unit, i)=> {
+                ingredient = ingredient.replace(unit, unitsShort[i]);
+            });
+
+            // 2. Remove parentheses 
+            ingredient = ingredient.replace(/ \([\s\S]*?\)/g, ' '); // Regular expression here it helps us to remove paranthesis.
+
+            // 3. Parse ingredients into count, unit and ingredient
+            const arrIng = ingredient.split(' ');
+            const unitIndex = arrIng.findIndex(el2 => unitsShort.includes(el2));
+
+            let objIng;
+            if (unitIndex > -1) {
+                // There is a unit
+            } else if (parseInt(arrIng[0], 10)){ // here 10 is for base ,, what does it means?
+                // There is NO unit, but 1st element is number
+                objIng = {
+                    count: parseInt(arrIng[0], 10),
+                    unit: '',
+                    ingredient: arrIng.slice(1).join(' ');
+                }
+            } else if (unitIndex === -1) {
+                // There is NO unit and NO number in 1st position
+                objIng = {
+                    count: 1,
+                    unit: '',
+                    ingredient
+                }
+            }
+            return ingredient;
+        });
         this.ingredients = newIngredients;
     }
 }
