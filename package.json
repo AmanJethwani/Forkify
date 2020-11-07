@@ -32,7 +32,8 @@
 	"dependencies": {
 		"axios": "^0.21.0",
 		"clean-webpack-plugin": "^3.0.0",
-		"core-js": "^3.6.5",
+		"core-js": "^2.6.5",
+		"fractional": "^1.0.0",
 		"regenerator-runtime": "^0.13.5",
 		"webpack-merge": "^4.2.2"
 	}
