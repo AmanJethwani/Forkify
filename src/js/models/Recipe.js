@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { join } from 'core-js/fn/array';
+// import { join } from 'core-js/fn/array'; // What is this ?
 
 export default class Recipe {
     constructor(id) {
@@ -14,7 +14,6 @@ export default class Recipe {
             this.img = res.data.recipe.image_url;
             this.url = res.data.recipe.source_url;
             this.ingredients = res.data.recipe.ingredients;
-            // console.log(res);
         }
         catch (error) {
             console.log(error);
@@ -35,7 +34,7 @@ export default class Recipe {
 
     parseIngredients() {
         const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
-        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'tsp', 'cup', 'pound'];
+        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
         const units = [...unitsShort, 'kg', 'g'];
 
         const newIngredients = this.ingredients.map(el => { // why we use here map method.
@@ -50,7 +49,7 @@ export default class Recipe {
 
             // 3. Parse ingredients into count, unit and ingredient
             const arrIng = ingredient.split(' ');
-            const unitIndex = arrIng.findIndex(el2 => units.includes(el2));
+            const unitIndex = arrIng.findIndex(el2 => units.includes(el2)); // confusion
 
             let objIng;
             if (unitIndex > -1) {
@@ -89,5 +88,17 @@ export default class Recipe {
             return objIng; 
         });
         this.ingredients = newIngredients;
+    }
+
+    updateServings(type) {
+        // Servings
+        const newServings = type === 'dec' ? this.servings - 1 : this.servings + 1;
+
+        //Ingredients
+        this.ingredients.forEach(ing => {
+            ing.count = ing.count * (newServings / this.servings); // kya kiya hai ye
+        });
+
+        this.servings = newServings;
     }
 }
